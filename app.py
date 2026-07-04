@@ -1,5 +1,5 @@
-from flask import Flask
-from models import db
+from flask import Flask, render_template, request, redirect, url_for
+from models import db, Ativo
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///carteira.db"
@@ -10,7 +10,21 @@ with app.app_context():
 
 @app.route("/")
 def pagina_inicial():
-    return "Minha carteira de investimentos"
+    ativos = Ativo.query.all()
+    return render_template("ativos.html", ativos=ativos)
+
+@app.route("/novo", methods=["GET", "POST"])
+def novo_ativo():
+    if request.method == "POST":
+        ativo = Ativo(
+            ticker=request.form["ticker"],
+            nome=request.form["nome"],
+            tipo=request.form["tipo"],
+        )
+        db.session.add(ativo)
+        db.session.commit()
+        return redirect(url_for("pagina_inicial"))
+    return render_template("novo_ativo.html")
 
 
 @app.route("/sobre")

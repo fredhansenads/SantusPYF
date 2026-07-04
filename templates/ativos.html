@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Minha Carteira</title>
+</head>
+<body>
+    <h1>Minha Carteira de Investimentos</h1>
+
+    <table border="1">
+        <tr>
+            <th>Ticker</th>
+            <th>Nome</th>
+            <th>Tipo</th>
+        </tr>
+        {% for ativo in ativos %}
+        <tr>
+            <td>{{ ativo.ticker }}</td>
+            <td>{{ ativo.nome }}</td>
+            <td>{{ ativo.tipo }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <p><a href="/novo">+ Cadastrar novo ativo</a></p>
+</body>
+</html>
