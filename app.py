@@ -37,6 +37,14 @@ def editar_ativo(id):
         return redirect(url_for("pagina_inicial"))
     return render_template("editar_ativo.html", ativo=ativo)
 
+
+@app.route("/excluir/<int:id>", methods=["POST"])
+def excluir_ativo(id):
+    ativo = Ativo.query.get_or_404(id)
+    db.session.delete(ativo)
+    db.session.commit()
+    return redirect(url_for("pagina_inicial"))
+
 @app.route("/sobre")
 def sobre():
     return "Projeto de estudo de Python para finanças"

@@ -19,10 +19,19 @@
             <td>{{ ativo.ticker }}</td>
             <td>{{ ativo.nome }}</td>
             <td>{{ ativo.tipo }}</td>
-            <td><a href="/editar/{{ ativo.id }}">Editar</a></td>
-        </tr>
+            <td>                                            <!-- célula alterada: -->
+                <a href="/editar/{{ ativo.id }}">Editar</a>
+                <form method="POST" action="/excluir/{{ ativo.id }}"
+                      style="display:inline"
+                      onsubmit="return confirm('Excluir {{ ativo.ticker }}?')">
+                    <button type="submit">Excluir</button>
+                </form>
+            </td>
         {% endfor %}
+        </tr>
     </table>
+
     <p><a href="/novo">+ Cadastrar novo ativo</a></p>
+
 </body>
 </html>
