@@ -7,6 +7,35 @@
 <body>
     <h1>Minha Carteira de Investimentos</h1>
 
+    <h2>Resumo da carteira</h2>
+    <p>
+        Investido: R$ {{ "%.2f"|format(total_custo) }} |
+        Valor atual: R$ {{ "%.2f"|format(total_atual) }} |
+        Resultado: R$ {{ "%.2f"|format(total_atual - total_custo) }}
+    </p>
+
+    <table border="1">
+        <tr>
+            <th>Ticker</th>
+            <th>Quantidade</th>
+            <th>Preço médio</th>
+            <th>Cotação</th>
+            <th>Valor atual</th>
+            <th>Rentabilidade</th>
+        </tr>
+        {% for p in posicoes %}
+        <tr>
+            <td>{{ p.ativo.ticker }}</td>
+            <td>{{ p.quantidade }}</td>
+            <td>R$ {{ "%.2f"|format(p.preco_medio) }}</td>
+            <td>{% if p.cotacao %}R$ {{ "%.2f"|format(p.cotacao) }}{% else %}-{% endif %}</td>
+            <td>{% if p.valor_atual %}R$ {{ "%.2f"|format(p.valor_atual) }}{% else %}-{% endif %}</td>
+            <td>{% if p.rentabilidade is not none %}{{ "%.2f"|format(p.rentabilidade) }}%{% else %}-{% endif %}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <h2>Meus ativos</h2>
     <table border="1">
         <tr>
             <th>Ticker</th>
@@ -19,7 +48,7 @@
             <td>{{ ativo.ticker }}</td>
             <td>{{ ativo.nome }}</td>
             <td>{{ ativo.tipo }}</td>
-            <td>                                            
+            <td>
                 <a href="/editar/{{ ativo.id }}">Editar</a>
                 <form method="POST" action="/excluir/{{ ativo.id }}"
                       style="display:inline"
@@ -27,12 +56,12 @@
                     <button type="submit">Excluir</button>
                 </form>
             </td>
-            
-        {% endfor %}
         </tr>
+        {% endfor %}
     </table>
 
     <p><a href="/novo">+ Cadastrar novo ativo</a></p>
     <p><a href="/transacoes">Ver transações</a></p>
+
 </body>
 </html>

@@ -1,6 +1,8 @@
 from flask import Flask, render_template, request, redirect, url_for
 from models import db, Ativo, Transacao
 from datetime import date
+from services import calcular_posicao
+
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///carteira.db"
@@ -12,7 +14,19 @@ with app.app_context():
 @app.route("/")
 def pagina_inicial():
     ativos = Ativo.query.all()
-    return render_template("ativos.html", ativos=ativos)
+    posicoes = []
+    for ativo in ativos:
+        p = calcular_posicao(ativo)
+        if p is not None:
+            posicoes.append(p)
+
+    total_custo = sum(p["custo"] for p in posicoes)
+    total_atual = sum(p["valor_atual"] or 0 for p in posicoes)
+
+    return render_template("ativos.html", ativos=ativos,
+                           posicoes=posicoes,
+                           total_custo=total_custo,
+                           total_atual=total_atual)
 
 @app.route("/novo", methods=["GET", "POST"])
 def novo_ativo():
