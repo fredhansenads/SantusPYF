@@ -1,5 +1,6 @@
 import yfinance as yf
 import pandas as pd
+import plotly.express as px
 
 
 def preco_atual(ticker):
@@ -81,3 +82,21 @@ def comparar_com_ibov(carteira):
     ibov.index = ibov.index.date
     df = pd.DataFrame({"Carteira": carteira, "IBOV": ibov}).dropna()
     return df / df.iloc[0] * 100
+
+def grafico_alocacao(posicoes):
+    tickers = [p["ativo"].ticker for p in posicoes if p["valor_atual"]]
+    valores = [p["valor_atual"] for p in posicoes if p["valor_atual"]]
+    if not valores:
+        return None
+    fig = px.pie(names=tickers, values=valores, title="Alocação da carteira")
+    return fig.to_html(full_html=False, include_plotlyjs="cdn")
+
+
+def grafico_evolucao(ativos):
+    carteira = historico_carteira(ativos)
+    if carteira is None:
+        return None
+    comparacao = comparar_com_ibov(carteira)
+    fig = px.line(comparacao, title="Carteira x IBOV (base 100)")
+    return fig.to_html(full_html=False, include_plotlyjs=False)
+

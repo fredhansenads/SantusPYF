@@ -1,7 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for
 from models import db, Ativo, Transacao
 from datetime import date
-from services import calcular_posicao
+from services import calcular_posicao, grafico_alocacao, grafico_evolucao
 
 
 app = Flask(__name__)
@@ -22,11 +22,14 @@ def pagina_inicial():
 
     total_custo = sum(p["custo"] for p in posicoes)
     total_atual = sum(p["valor_atual"] or 0 for p in posicoes)
-
+    grafico_pizza = grafico_alocacao(posicoes)
+    grafico_linha = grafico_evolucao(ativos)
     return render_template("ativos.html", ativos=ativos,
                            posicoes=posicoes,
                            total_custo=total_custo,
-                           total_atual=total_atual)
+                           total_atual=total_atual,
+                           grafico_pizza=grafico_pizza,
+                           grafico_linha=grafico_linha)
 
 @app.route("/novo", methods=["GET", "POST"])
 def novo_ativo():

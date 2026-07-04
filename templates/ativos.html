@@ -34,6 +34,14 @@
         </tr>
         {% endfor %}
     </table>
+    
+    <h2>Gráficos</h2>
+    {% if grafico_pizza %}
+        {{ grafico_pizza|safe }}
+    {% endif %}
+    {% if grafico_linha %}
+        {{ grafico_linha|safe }}
+    {% endif %}
 
     <h2>Meus ativos</h2>
     <table border="1">
