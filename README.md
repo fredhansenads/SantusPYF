@@ -3,6 +3,8 @@
 Sistema web para controle de carteira de investimentos, inspirado no KINVO.
 Projeto de estudo desenvolvido durante meu curso de Python.
 
+🌐 **Ao vivo:** [fredhansen.pythonanywhere.com](https://fredhansen.pythonanywhere.com)
+
 ## 🎯 Funcionalidades
 
 - ✅ Cadastro, edição e exclusão de ativos (ações, FIIs, renda fixa, ETFs)
