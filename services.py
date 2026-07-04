@@ -1,17 +1,46 @@
 import yfinance as yf
 import pandas as pd
 import plotly.express as px
+import time
 
+_cache_precos = {}
+_cache_historicos = {}
+CACHE_SEGUNDOS = 600
 
 def preco_atual(ticker):
+    agora = time.time()
+
+    if ticker in _cache_precos:
+        preco, momento = _cache_precos[ticker]
+        if agora - momento < CACHE_SEGUNDOS:
+            return preco
+
     try:
         historico = yf.Ticker(ticker).history(period="1d")
         if historico.empty:
-            return None
-        return float(historico["Close"].iloc[-1])
+            preco = None
+        else:
+            preco = float(historico["Close"].iloc[-1])
     except Exception:
-        return None
+        preco = None
 
+    _cache_precos[ticker] = (preco, agora)
+    return preco
+
+def historico_precos(ticker, inicio):
+    agora = time.time()
+    chave = (ticker, inicio)
+
+    if chave in _cache_historicos:
+        precos, momento = _cache_historicos[chave]
+        if agora - momento < CACHE_SEGUNDOS:
+            return precos
+
+    precos = yf.Ticker(ticker).history(start=inicio)["Close"]
+    precos.index = precos.index.date
+
+    _cache_historicos[chave] = (precos, agora)
+    return precos
 
 def calcular_posicao(ativo):
     qtd_comprada = 0
@@ -50,10 +79,9 @@ def calcular_posicao(ativo):
 
 def serie_valor_ativo(ativo):
     inicio = min(t.data for t in ativo.transacoes)
-    precos = yf.Ticker(ativo.ticker).history(start=inicio)["Close"]
+    precos = historico_precos(ativo.ticker, inicio)
     if precos.empty:
         return None
-    precos.index = precos.index.date
 
     quantidades = pd.Series(0.0, index=precos.index)
     for t in ativo.transacoes:
@@ -78,8 +106,7 @@ def historico_carteira(ativos):
 
 
 def comparar_com_ibov(carteira):
-    ibov = yf.Ticker("^BVSP").history(start=str(carteira.index[0]))["Close"]
-    ibov.index = ibov.index.date
+    ibov = historico_precos("^BVSP", carteira.index[0])
     df = pd.DataFrame({"Carteira": carteira, "IBOV": ibov}).dropna()
     return df / df.iloc[0] * 100
 
