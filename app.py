@@ -1,12 +1,13 @@
+import os
 from flask import Flask, render_template, request, redirect, url_for, flash
 from models import db, Ativo, Transacao
 from datetime import date
 from services import calcular_posicao, grafico_alocacao, grafico_evolucao
-from sqlalchemy.exc import IdentifierError
+from sqlalchemy.exc import IntegrityError
 
 
 app = Flask(__name__)
-app.secret_key = "troque-por-qualquer-texto-aleatorio-longo"
+app.secret_key = os.environ.get("SECRET_KEY", "dev-chave-somente-para-estudo")
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///carteira.db"
 db.init_app(app)
 
@@ -42,13 +43,13 @@ def novo_ativo():
             tipo=request.form["tipo"],
         )
         db.session.add(ativo)
-        try:                                                      # novo
-            db.session.commit()                                   # (a linha que já existia, agora dentro do try)
-        except IntegrityError:                                    # novo
-            db.session.rollback()                                 # novo
-            flash("Já existe um ativo com esse ticker.", "danger")  # novo
-            return redirect(url_for("novo_ativo"))                # novo
-        flash("Ativo cadastrado com sucesso!", "success")         # novo
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            flash("Já existe um ativo com esse ticker.", "danger")
+            return redirect(url_for("novo_ativo"))
+        flash("Ativo cadastrado com sucesso!", "success")
         return redirect(url_for("pagina_inicial"))
     return render_template("novo_ativo.html")
 
@@ -59,7 +60,13 @@ def editar_ativo(id):
         ativo.ticker = request.form["ticker"]
         ativo.nome = request.form["nome"]
         ativo.tipo = request.form["tipo"]
-        db.session.commit()
+        try:
+            db.session.commit()
+        except IntegrityError:
+            db.session.rollback()
+            flash("Já existe um ativo com esse ticker.", "danger")
+            return redirect(url_for("editar_ativo", id=id))
+        flash("Ativo atualizado!", "success")
         return redirect(url_for("pagina_inicial"))
     return render_template("editar_ativo.html", ativo=ativo)
 
@@ -69,6 +76,7 @@ def excluir_ativo(id):
     ativo = Ativo.query.get_or_404(id)
     db.session.delete(ativo)
     db.session.commit()
+    flash("Ativo excluído.", "success")
     return redirect(url_for("pagina_inicial"))
 
 
@@ -90,6 +98,7 @@ def nova_transacao():
         )
         db.session.add(transacao)
         db.session.commit()
+        flash("Transação registrada!", "success")
         return redirect(url_for("listar_transacoes"))
     ativos = Ativo.query.all()
     return render_template("nova_transacao.html", ativos=ativos)
@@ -99,6 +108,7 @@ def excluir_transacao(id):
     transacao = Transacao.query.get_or_404(id)
     db.session.delete(transacao)
     db.session.commit()
+    flash("Transação excluída.", "success")
     return redirect(url_for("listar_transacoes"))
 
 @app.route("/sobre")
