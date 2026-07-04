@@ -8,7 +8,7 @@ class Ativo(db.Model):
     ticker = db.Column(db.String(20), unique=True, nullable=False)
     nome = db.Column(db.String(100), nullable=False)
     tipo = db.Column(db.String(30), nullable=False)
-    transacoes = db.relationship("Transacao", backref="ativo", lazy=True)
+    transacoes = db.relationship("Transacao", backref="ativo", lazy=True, cascade="all, delete-orphan")
 
 
 class Transacao(db.Model):

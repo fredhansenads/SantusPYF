@@ -81,7 +81,7 @@
             <a class="btn btn-sm btn-outline-primary" href="/editar/{{ ativo.id }}">Editar</a>
             <form method="POST" action="/excluir/{{ ativo.id }}"
                   style="display:inline"
-                  onsubmit="return confirm('Excluir {{ ativo.ticker }}?')">
+                  onsubmit="return confirm('Excluir {{ ativo.ticker }} e TODAS as suas transações?')">
                 <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
             </form>
         </td>

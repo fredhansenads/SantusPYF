@@ -20,6 +20,11 @@
     </nav>
 
     <div class="container">
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+            {% for categoria, texto in mensagens %}
+                <div class="alert alert-{{ categoria }}">{{ texto }}</div>
+            {% endfor %}
+        {% endwith %}
         {% block conteudo %}{% endblock %}
     </div>
 </body>

@@ -1,10 +1,12 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, flash
 from models import db, Ativo, Transacao
 from datetime import date
 from services import calcular_posicao, grafico_alocacao, grafico_evolucao
+from sqlalchemy.exc import IdentifierError
 
 
 app = Flask(__name__)
+app.secret_key = "troque-por-qualquer-texto-aleatorio-longo"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///carteira.db"
 db.init_app(app)
 
@@ -40,7 +42,13 @@ def novo_ativo():
             tipo=request.form["tipo"],
         )
         db.session.add(ativo)
-        db.session.commit()
+        try:                                                      # novo
+            db.session.commit()                                   # (a linha que já existia, agora dentro do try)
+        except IntegrityError:                                    # novo
+            db.session.rollback()                                 # novo
+            flash("Já existe um ativo com esse ticker.", "danger")  # novo
+            return redirect(url_for("novo_ativo"))                # novo
+        flash("Ativo cadastrado com sucesso!", "success")         # novo
         return redirect(url_for("pagina_inicial"))
     return render_template("novo_ativo.html")
 
