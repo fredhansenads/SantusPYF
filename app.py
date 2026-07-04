@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
-from models import db, Ativo
+from models import db, Ativo, Transacao
+from datetime import date
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///carteira.db"
@@ -44,6 +45,36 @@ def excluir_ativo(id):
     db.session.delete(ativo)
     db.session.commit()
     return redirect(url_for("pagina_inicial"))
+
+
+@app.route("/transacoes")
+def listar_transacoes():
+    transacoes = Transacao.query.order_by(Transacao.data).all()
+    return render_template("transacoes.html", transacoes=transacoes)
+
+
+@app.route("/transacoes/nova", methods=["GET", "POST"])
+def nova_transacao():
+    if request.method == "POST":
+        transacao = Transacao(
+            ativo_id=int(request.form["ativo_id"]),
+            data=date.fromisoformat(request.form["data"]),
+            tipo=request.form["tipo"],
+            quantidade=float(request.form["quantidade"]),
+            preco_unitario=float(request.form["preco_unitario"]),
+        )
+        db.session.add(transacao)
+        db.session.commit()
+        return redirect(url_for("listar_transacoes"))
+    ativos = Ativo.query.all()
+    return render_template("nova_transacao.html", ativos=ativos)
+
+@app.route("/transacoes/excluir/<int:id>", methods=["POST"])
+def excluir_transacao(id):
+    transacao = Transacao.query.get_or_404(id)
+    db.session.delete(transacao)
+    db.session.commit()
+    return redirect(url_for("listar_transacoes"))
 
 @app.route("/sobre")
 def sobre():
