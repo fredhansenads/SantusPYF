@@ -1,75 +1,93 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Minha Carteira</title>
-</head>
-<body>
-    <h1>Minha Carteira de Investimentos</h1>
+{% extends "base.html" %}
 
-    <h2>Resumo da carteira</h2>
-    <p>
-        Investido: R$ {{ "%.2f"|format(total_custo) }} |
-        Valor atual: R$ {{ "%.2f"|format(total_atual) }} |
-        Resultado: R$ {{ "%.2f"|format(total_atual - total_custo) }}
-    </p>
+{% block conteudo %}
+<h1 class="mb-4">Minha Carteira de Investimentos</h1>
 
-    <table border="1">
-        <tr>
-            <th>Ticker</th>
-            <th>Quantidade</th>
-            <th>Preço médio</th>
-            <th>Cotação</th>
-            <th>Valor atual</th>
-            <th>Rentabilidade</th>
-        </tr>
-        {% for p in posicoes %}
-        <tr>
-            <td>{{ p.ativo.ticker }}</td>
-            <td>{{ p.quantidade }}</td>
-            <td>R$ {{ "%.2f"|format(p.preco_medio) }}</td>
-            <td>{% if p.cotacao %}R$ {{ "%.2f"|format(p.cotacao) }}{% else %}-{% endif %}</td>
-            <td>{% if p.valor_atual %}R$ {{ "%.2f"|format(p.valor_atual) }}{% else %}-{% endif %}</td>
-            <td>{% if p.rentabilidade is not none %}{{ "%.2f"|format(p.rentabilidade) }}%{% else %}-{% endif %}</td>
-        </tr>
-        {% endfor %}
-    </table>
-    
-    <h2>Gráficos</h2>
-    {% if grafico_pizza %}
-        {{ grafico_pizza|safe }}
-    {% endif %}
-    {% if grafico_linha %}
-        {{ grafico_linha|safe }}
-    {% endif %}
+<div class="row mb-4">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="text-muted">Investido</h6>
+                <p class="fs-4 mb-0">R$ {{ "%.2f"|format(total_custo) }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="text-muted">Valor atual</h6>
+                <p class="fs-4 mb-0">R$ {{ "%.2f"|format(total_atual) }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="text-muted">Resultado</h6>
+                <p class="fs-4 mb-0 {% if total_atual - total_custo >= 0 %}text-success{% else %}text-danger{% endif %}">
+                    R$ {{ "%.2f"|format(total_atual - total_custo) }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <h2>Meus ativos</h2>
-    <table border="1">
-        <tr>
-            <th>Ticker</th>
-            <th>Nome</th>
-            <th>Tipo</th>
-            <th>Ações</th>
-        </tr>
-        {% for ativo in ativos %}
-        <tr>
-            <td>{{ ativo.ticker }}</td>
-            <td>{{ ativo.nome }}</td>
-            <td>{{ ativo.tipo }}</td>
-            <td>
-                <a href="/editar/{{ ativo.id }}">Editar</a>
-                <form method="POST" action="/excluir/{{ ativo.id }}"
-                      style="display:inline"
-                      onsubmit="return confirm('Excluir {{ ativo.ticker }}?')">
-                    <button type="submit">Excluir</button>
-                </form>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
+<h2>Posições</h2>
+<table class="table table-striped table-hover">
+    <tr>
+        <th>Ticker</th>
+        <th>Quantidade</th>
+        <th>Preço médio</th>
+        <th>Cotação</th>
+        <th>Valor atual</th>
+        <th>Rentabilidade</th>
+    </tr>
+    {% for p in posicoes %}
+    <tr>
+        <td>{{ p.ativo.ticker }}</td>
+        <td>{{ p.quantidade }}</td>
+        <td>R$ {{ "%.2f"|format(p.preco_medio) }}</td>
+        <td>{% if p.cotacao %}R$ {{ "%.2f"|format(p.cotacao) }}{% else %}-{% endif %}</td>
+        <td>{% if p.valor_atual %}R$ {{ "%.2f"|format(p.valor_atual) }}{% else %}-{% endif %}</td>
+        <td class="{% if p.rentabilidade and p.rentabilidade >= 0 %}text-success{% elif p.rentabilidade %}text-danger{% endif %}">
+            {% if p.rentabilidade is not none %}{{ "%.2f"|format(p.rentabilidade) }}%{% else %}-{% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
 
-    <p><a href="/novo">+ Cadastrar novo ativo</a></p>
-    <p><a href="/transacoes">Ver transações</a></p>
+<h2>Gráficos</h2>
+{% if grafico_pizza %}
+    {{ grafico_pizza|safe }}
+{% endif %}
+{% if grafico_linha %}
+    {{ grafico_linha|safe }}
+{% endif %}
 
-</body>
-</html>
+<h2>Meus ativos</h2>
+<table class="table table-striped">
+    <tr>
+        <th>Ticker</th>
+        <th>Nome</th>
+        <th>Tipo</th>
+        <th>Ações</th>
+    </tr>
+    {% for ativo in ativos %}
+    <tr>
+        <td>{{ ativo.ticker }}</td>
+        <td>{{ ativo.nome }}</td>
+        <td>{{ ativo.tipo }}</td>
+        <td>
+            <a class="btn btn-sm btn-outline-primary" href="/editar/{{ ativo.id }}">Editar</a>
+            <form method="POST" action="/excluir/{{ ativo.id }}"
+                  style="display:inline"
+                  onsubmit="return confirm('Excluir {{ ativo.ticker }}?')">
+                <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<a class="btn btn-primary mb-4" href="/novo">+ Cadastrar novo ativo</a>
+{% endblock %}

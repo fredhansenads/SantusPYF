@@ -1,30 +1,26 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <title>Editar Ativo</title>
-</head>
-<body>
-    <h1>Editar Ativo</h1>
+{% extends "base.html" %}
 
-    <form method="POST">
-        <label>Ticker:</label>
-        <input type="text" name="ticker" value="{{ ativo.ticker }}" required>
-        <br><br>
-        <label>Nome:</label>
-        <input type="text" name="nome" value="{{ ativo.nome }}" required>
-        <br><br>
-        <label>Tipo:</label>
-        <select name="tipo">
+{% block conteudo %}
+<h1 class="mb-4">Editar Ativo</h1>
+
+<form method="POST">
+    <div class="mb-3">
+        <label class="form-label">Ticker:</label>
+        <input type="text" name="ticker" value="{{ ativo.ticker }}" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Nome:</label>
+        <input type="text" name="nome" value="{{ ativo.nome }}" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Tipo:</label>
+        <select name="tipo" class="form-select">
             <option value="Acao" {% if ativo.tipo == "Acao" %}selected{% endif %}>Ação</option>
             <option value="FII" {% if ativo.tipo == "FII" %}selected{% endif %}>FII</option>
             <option value="Renda Fixa" {% if ativo.tipo == "Renda Fixa" %}selected{% endif %}>Renda Fixa</option>
             <option value="ETF" {% if ativo.tipo == "ETF" %}selected{% endif %}>ETF</option>
         </select>
-        <br><br>
-        <button type="submit">Salvar alterações</button>
-    </form>
-
-    <a href="/">Voltar para a carteira</a>
-</body>
-</html>
+    </div>
+    <button type="submit" class="btn btn-primary">Salvar alterações</button>
+</form>
+{% endblock %}
