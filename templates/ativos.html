@@ -12,12 +12,14 @@
             <th>Ticker</th>
             <th>Nome</th>
             <th>Tipo</th>
+            <th>Ações</th>
         </tr>
         {% for ativo in ativos %}
         <tr>
             <td>{{ ativo.ticker }}</td>
             <td>{{ ativo.nome }}</td>
             <td>{{ ativo.tipo }}</td>
+            <td><a href="/editar/{{ ativo.id }}">Editar</a></td>
         </tr>
         {% endfor %}
     </table>

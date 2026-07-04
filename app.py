@@ -26,6 +26,16 @@ def novo_ativo():
         return redirect(url_for("pagina_inicial"))
     return render_template("novo_ativo.html")
 
+@app.route("/editar/<int:id>", methods=["GET", "POST"])
+def editar_ativo(id):
+    ativo = Ativo.query.get_or_404(id)
+    if request.method == "POST":
+        ativo.ticker = request.form["ticker"]
+        ativo.nome = request.form["nome"]
+        ativo.tipo = request.form["tipo"]
+        db.session.commit()
+        return redirect(url_for("pagina_inicial"))
+    return render_template("editar_ativo.html", ativo=ativo)
 
 @app.route("/sobre")
 def sobre():
