@@ -15,18 +15,18 @@
     <tr>
         <td>{{ p.data.strftime("%d/%m/%Y") }}</td>
         <td>{{ p.ativo.ticker }}</td>
-        <td>{{ p.tipo }}</td>
+        <td><span class="badge text-bg-info">{{ p.tipo }}</span></td>
         <td>R$ {{ "%.2f"|format(p.valor) }}</td>
         <td>
             <form method="POST" action="/proventos/excluir/{{ p.id }}"
                   style="display:inline"
                   onsubmit="return confirm('Excluir este provento de {{ p.ativo.ticker }}?')">
-                <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
+                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash me-1"></i>Excluir</button>
             </form>
         </td>
     </tr>
     {% endfor %}
 </table>
 
-<a class="btn btn-primary" href="/proventos/novo">+ Novo provento</a>
+<a class="btn btn-primary" href="/proventos/novo"><i class="bi bi-plus-circle me-1"></i>Novo provento</a>
 {% endblock %}

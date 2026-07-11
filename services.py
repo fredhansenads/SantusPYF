@@ -233,28 +233,40 @@ def comparacao_completa(ativos):
         return None
     return df / df.iloc[0] * 100
 
-def grafico_alocacao(posicoes):
+def _aplicar_tema(fig, tema):
+    fig.update_layout(
+        template="plotly_dark" if tema == "escuro" else "plotly_white",
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+    )
+    return fig
+
+
+def grafico_alocacao(posicoes, tema="escuro"):
     tickers = [p["ativo"].ticker for p in posicoes if p["valor_atual"]]
     valores = [p["valor_atual"] for p in posicoes if p["valor_atual"]]
     if not valores:
         return None
     fig = px.pie(names=tickers, values=valores, title="Alocação da carteira")
+    _aplicar_tema(fig, tema)
     return fig.to_html(full_html=False, include_plotlyjs="cdn")
 
 
-def grafico_evolucao(comparacao):
+def grafico_evolucao(comparacao, tema="escuro"):
     if comparacao is None:
         return None
     fig = px.line(comparacao, title="Carteira x Benchmarks (base 100, método de cotas)")
+    _aplicar_tema(fig, tema)
     return fig.to_html(full_html=False, include_plotlyjs=False)
 
 
-def grafico_patrimonio(ativos):
+def grafico_patrimonio(ativos, tema="escuro"):
     carteira = historico_carteira(ativos)
     if carteira is None or carteira.empty:
         return None
     fig = px.area(carteira, title="Evolução do patrimônio (R$)")
     fig.update_layout(showlegend=False)
+    _aplicar_tema(fig, tema)
     return fig.to_html(full_html=False, include_plotlyjs=False)
 
 
@@ -281,7 +293,8 @@ def historico_ohlc(ticker, inicio):
     return ohlc
 
 
-def graficos_ativo(ativo, mm1=20, mm2=50, tipo_grafico="linha", rsi_periodo=14):
+def graficos_ativo(ativo, mm1=20, mm2=50, tipo_grafico="linha",
+                   rsi_periodo=14, tema="escuro"):
     inicio = date.today() - timedelta(days=365)
     eh_tesouro = ativo.tipo == "Tesouro Direto"
     if eh_tesouro:
@@ -319,6 +332,9 @@ def graficos_ativo(ativo, mm1=20, mm2=50, tipo_grafico="linha", rsi_periodo=14):
     fig_rsi.add_hline(y=30, line_dash="dash", line_color="green")
     fig_rsi.update_yaxes(range=[0, 100])
     fig_rsi.update_layout(showlegend=False)
+
+    _aplicar_tema(fig_precos, tema)
+    _aplicar_tema(fig_rsi, tema)
 
     return (fig_precos.to_html(full_html=False, include_plotlyjs="cdn"),
             fig_rsi.to_html(full_html=False, include_plotlyjs=False))

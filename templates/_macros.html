@@ -1,0 +1,16 @@
+{% macro card(titulo, valor, classe="") %}
+<div class="col">
+    <div class="card shadow-sm h-100">
+        <div class="card-body">
+            <h6 class="text-muted">{{ titulo }}</h6>
+            <p class="fs-4 mb-0 {{ classe }}">{{ valor }}</p>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
+{% macro badge_tipo(tipo) %}
+{% set cores = {"Acao": "primary", "FII": "success", "ETF": "info",
+                "Renda Fixa": "warning", "Tesouro Direto": "danger"} %}
+<span class="badge text-bg-{{ cores.get(tipo, "secondary") }}">{{ tipo }}</span>
+{% endmacro %}

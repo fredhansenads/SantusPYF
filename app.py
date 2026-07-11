@@ -60,11 +60,13 @@ def pagina_inicial():
     total_custo = sum(p["custo"] for p in posicoes)
     total_atual = sum(p["valor_atual"] or 0 for p in posicoes)
     total_proventos = sum(p.valor for p in Provento.query.all())
-    grafico_pizza = grafico_alocacao(posicoes)
+
+    tema = request.cookies.get("tema", "escuro")
+    grafico_pizza = grafico_alocacao(posicoes, tema)
 
     comparacao = comparacao_completa(ativos)
-    grafico_linha = grafico_evolucao(comparacao)
-    grafico_patr = grafico_patrimonio(ativos)
+    grafico_linha = grafico_evolucao(comparacao, tema)
+    grafico_patr = grafico_patrimonio(ativos, tema)
     rendimentos = None
     if comparacao is not None and len(comparacao) > 0:
         rendimentos = {coluna: comparacao[coluna].iloc[-1] - 100
@@ -198,7 +200,8 @@ def detalhe_ativo(id):
     session[chave_sessao] = {"mm1": mm1, "mm2": mm2,
                              "rsi": rsi_periodo, "grafico": tipo_grafico}
 
-    graficos = graficos_ativo(ativo, mm1, mm2, tipo_grafico, rsi_periodo)
+    tema = request.cookies.get("tema", "escuro")
+    graficos = graficos_ativo(ativo, mm1, mm2, tipo_grafico, rsi_periodo, tema)
     return render_template("ativo.html", ativo=ativo,
                            posicao=posicao, graficos=graficos,
                            mm1=mm1, mm2=mm2, rsi_periodo=rsi_periodo,

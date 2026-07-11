@@ -17,21 +17,21 @@
     <tr>
         <td>{{ t.data.strftime("%d/%m/%Y") }}</td>
         <td>{{ t.ativo.ticker }}</td>
-        <td>{{ t.tipo }}</td>
+        <td><span class="badge text-bg-{{ 'success' if t.tipo == 'compra' else 'danger' }}">{{ t.tipo }}</span></td>
         <td>{{ t.quantidade }}</td>
         <td>R$ {{ "%.2f"|format(t.preco_unitario) }}</td>
         <td>R$ {{ "%.2f"|format(t.quantidade * t.preco_unitario) }}</td>
         <td>
-            <a class="btn btn-sm btn-outline-primary" href="/transacoes/editar/{{ t.id }}">Editar</a>
+            <a class="btn btn-sm btn-outline-primary" href="/transacoes/editar/{{ t.id }}"><i class="bi bi-pencil me-1"></i>Editar</a>
             <form method="POST" action="/transacoes/excluir/{{ t.id }}"
                   style="display:inline"
                   onsubmit="return confirm('Excluir esta transação de {{ t.ativo.ticker }}?')">
-                <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
+                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash me-1"></i>Excluir</button>
             </form>
         </td>
     </tr>
     {% endfor %}
 </table>
 
-<a class="btn btn-primary" href="/transacoes/nova">+ Nova transação</a>
+<a class="btn btn-primary" href="/transacoes/nova"><i class="bi bi-plus-circle me-1"></i>Nova transação</a>
 {% endblock %}

@@ -17,7 +17,7 @@ Projeto de estudo desenvolvido durante meu curso de Python.
 - ✅ Página de detalhe por ativo com **médias móveis e RSI**
 - ✅ **Análise de risco**: volatilidade, drawdown máximo e correlação entre ativos
 - ✅ **Login com senha criptografada** (Flask-Login)
-- ✅ Interface responsiva com Bootstrap e mensagens de feedback ao usuário
+- ✅ Interface moderna e responsiva: tema claro/escuro, ícones, fonte Inter e feedback ao usuário
 
 ## 🛠️ Tecnologias
 

@@ -1,43 +1,16 @@
 {% extends "base.html" %}
+{% import "_macros.html" as ui %}
 
 {% block conteudo %}
 <h1 class="mb-4">Minha Carteira de Investimentos</h1>
 
+{% set resultado = total_atual - total_custo + total_proventos %}
 <div class="row mb-4">
-    <div class="col">
-        <div class="card">
-            <div class="card-body">
-                <h6 class="text-muted">Investido</h6>
-                <p class="fs-4 mb-0">R$ {{ "%.2f"|format(total_custo) }}</p>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="card">
-            <div class="card-body">
-                <h6 class="text-muted">Valor atual</h6>
-                <p class="fs-4 mb-0">R$ {{ "%.2f"|format(total_atual) }}</p>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="card">
-            <div class="card-body">
-                <h6 class="text-muted">Proventos recebidos</h6>
-                <p class="fs-4 mb-0">R$ {{ "%.2f"|format(total_proventos) }}</p>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="card">
-            <div class="card-body">
-                <h6 class="text-muted">Resultado (c/ proventos)</h6>
-                <p class="fs-4 mb-0 {% if total_atual - total_custo + total_proventos >= 0 %}text-success{% else %}text-danger{% endif %}">
-                    R$ {{ "%.2f"|format(total_atual - total_custo + total_proventos) }}
-                </p>
-            </div>
-        </div>
-    </div>
+    {{ ui.card("Investido", "R$ " ~ "%.2f"|format(total_custo)) }}
+    {{ ui.card("Valor atual", "R$ " ~ "%.2f"|format(total_atual)) }}
+    {{ ui.card("Proventos recebidos", "R$ " ~ "%.2f"|format(total_proventos)) }}
+    {{ ui.card("Resultado (c/ proventos)", "R$ " ~ "%.2f"|format(resultado),
+               "text-success" if resultado >= 0 else "text-danger") }}
 </div>
 
 {% if rendimentos %}
@@ -98,18 +71,18 @@
     <tr>
         <td><a href="/ativo/{{ ativo.id }}">{{ ativo.ticker }}</a></td>
         <td>{{ ativo.nome }}</td>
-        <td>{{ ativo.tipo }}</td>
+        <td>{{ ui.badge_tipo(ativo.tipo) }}</td>
         <td>
-            <a class="btn btn-sm btn-outline-primary" href="/editar/{{ ativo.id }}">Editar</a>
+            <a class="btn btn-sm btn-outline-primary" href="/editar/{{ ativo.id }}"><i class="bi bi-pencil me-1"></i>Editar</a>
             <form method="POST" action="/excluir/{{ ativo.id }}"
                   style="display:inline"
                   onsubmit="return confirm('Excluir {{ ativo.ticker }} e TODAS as suas transações?')">
-                <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
+                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash me-1"></i>Excluir</button>
             </form>
         </td>
     </tr>
     {% endfor %}
 </table>
 
-<a class="btn btn-primary mb-4" href="/novo">+ Cadastrar novo ativo</a>
+<a class="btn btn-primary mb-4" href="/novo"><i class="bi bi-plus-circle me-1"></i>Cadastrar novo ativo</a>
 {% endblock %}

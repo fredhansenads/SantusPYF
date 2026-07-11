@@ -1,45 +1,20 @@
 {% extends "base.html" %}
+{% import "_macros.html" as ui %}
 
 {% block conteudo %}
 <h1 class="mb-1">{{ ativo.ticker }}</h1>
-<p class="text-muted mb-4">{{ ativo.nome }} — {{ ativo.tipo }}</p>
+<p class="text-muted mb-4">{{ ativo.nome }} {{ ui.badge_tipo(ativo.tipo) }}</p>
 
 {% if posicao %}
 <div class="row mb-4">
-    <div class="col">
-        <div class="card">
-            <div class="card-body">
-                <h6 class="text-muted">Quantidade</h6>
-                <p class="fs-4 mb-0">{{ posicao.quantidade }}</p>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="card">
-            <div class="card-body">
-                <h6 class="text-muted">Preço médio</h6>
-                <p class="fs-4 mb-0">R$ {{ "%.2f"|format(posicao.preco_medio) }}</p>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="card">
-            <div class="card-body">
-                <h6 class="text-muted">Valor atual</h6>
-                <p class="fs-4 mb-0">{% if posicao.valor_atual %}R$ {{ "%.2f"|format(posicao.valor_atual) }}{% else %}-{% endif %}</p>
-            </div>
-        </div>
-    </div>
-    <div class="col">
-        <div class="card">
-            <div class="card-body">
-                <h6 class="text-muted">Rentabilidade</h6>
-                <p class="fs-4 mb-0 {% if posicao.rentabilidade and posicao.rentabilidade >= 0 %}text-success{% elif posicao.rentabilidade %}text-danger{% endif %}">
-                    {% if posicao.rentabilidade is not none %}{{ "%.2f"|format(posicao.rentabilidade) }}%{% else %}-{% endif %}
-                </p>
-            </div>
-        </div>
-    </div>
+    {{ ui.card("Quantidade", posicao.quantidade) }}
+    {{ ui.card("Preço médio", "R$ " ~ "%.2f"|format(posicao.preco_medio)) }}
+    {{ ui.card("Valor atual",
+               ("R$ " ~ "%.2f"|format(posicao.valor_atual)) if posicao.valor_atual else "-") }}
+    {{ ui.card("Rentabilidade",
+               ("%.2f"|format(posicao.rentabilidade) ~ "%") if posicao.rentabilidade is not none else "-",
+               "text-success" if posicao.rentabilidade and posicao.rentabilidade >= 0
+               else ("text-danger" if posicao.rentabilidade else "")) }}
 </div>
 {% else %}
 <p class="text-muted">Sem posição aberta neste ativo.</p>
@@ -115,5 +90,5 @@
 <p class="text-muted">Nenhum provento registrado.</p>
 {% endif %}
 
-<a class="btn btn-outline-primary mb-4" href="/editar/{{ ativo.id }}">Editar ativo</a>
+<a class="btn btn-outline-primary mb-4" href="/editar/{{ ativo.id }}"><i class="bi bi-pencil me-1"></i>Editar ativo</a>
 {% endblock %}
