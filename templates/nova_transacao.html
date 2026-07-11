@@ -31,6 +31,22 @@
         <label class="form-label">Preço unitário (R$):</label>
         <input type="number" name="preco_unitario" step="any" min="0" class="form-control" required>
     </div>
+    <div class="mb-3">
+        <label class="form-label">Corretora (opcional):</label>
+        <input type="text" name="corretora" list="corretoras" maxlength="50" class="form-control" placeholder="Ex.: XP, Rico, Inter...">
+        <datalist id="corretoras">
+            <option value="XP Investimentos">
+            <option value="Rico">
+            <option value="Clear">
+            <option value="NuInvest">
+            <option value="Inter">
+            <option value="BTG Pactual">
+            <option value="Itaú">
+            <option value="Bradesco Ágora">
+            <option value="Toro">
+            <option value="Órama">
+        </datalist>
+    </div>
     <button type="submit" class="btn btn-primary">Salvar</button>
 </form>
 {% endblock %}

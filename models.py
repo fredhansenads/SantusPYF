@@ -26,6 +26,7 @@ class Transacao(db.Model):
     tipo = db.Column(db.String(10), nullable=False)
     quantidade = db.Column(db.Float, nullable=False)
     preco_unitario = db.Column(db.Float, nullable=False)
+    corretora = db.Column(db.String(50))
 
 
 class Provento(db.Model):

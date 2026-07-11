@@ -65,6 +65,7 @@
         <th>Tipo</th>
         <th>Quantidade</th>
         <th>Preço unitário</th>
+        <th>Corretora</th>
     </tr>
     {% for t in ativo.transacoes|sort(attribute="data") %}
     <tr>
@@ -72,6 +73,7 @@
         <td>{{ t.tipo }}</td>
         <td>{{ t.quantidade }}</td>
         <td>R$ {{ "%.2f"|format(t.preco_unitario) }}</td>
+        <td>{{ t.corretora or "-" }}</td>
     </tr>
     {% endfor %}
 </table>

@@ -11,6 +11,7 @@
         <th>Quantidade</th>
         <th>Preço unitário</th>
         <th>Total</th>
+        <th>Corretora</th>
         <th>Ações</th>
     </tr>
     {% for t in transacoes %}
@@ -21,6 +22,7 @@
         <td>{{ t.quantidade }}</td>
         <td>R$ {{ "%.2f"|format(t.preco_unitario) }}</td>
         <td>R$ {{ "%.2f"|format(t.quantidade * t.preco_unitario) }}</td>
+        <td>{{ t.corretora or "-" }}</td>
         <td>
             <a class="btn btn-sm btn-outline-primary" href="/transacoes/editar/{{ t.id }}"><i class="bi bi-pencil me-1"></i>Editar</a>
             <form method="POST" action="/transacoes/excluir/{{ t.id }}"

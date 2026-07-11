@@ -155,6 +155,7 @@ def nova_transacao():
             tipo=request.form["tipo"],
             quantidade=float(request.form["quantidade"]),
             preco_unitario=float(request.form["preco_unitario"]),
+            corretora=request.form.get("corretora", "").strip() or None,
         )
         db.session.add(transacao)
         db.session.commit()
@@ -173,6 +174,7 @@ def editar_transacao(id):
         transacao.tipo = request.form["tipo"]
         transacao.quantidade = float(request.form["quantidade"])
         transacao.preco_unitario = float(request.form["preco_unitario"])
+        transacao.corretora = request.form.get("corretora", "").strip() or None
         db.session.commit()
         flash("Transação atualizada!", "success")
         return redirect(url_for("listar_transacoes"))
@@ -270,6 +272,11 @@ def excluir_provento(id):
     db.session.commit()
     flash("Provento excluído.", "success")
     return redirect(url_for("listar_proventos"))
+
+
+@app.route("/sw.js")
+def service_worker():
+    return app.send_static_file("sw.js")
 
 
 @app.route("/sobre")
