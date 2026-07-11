@@ -4,63 +4,27 @@
 {% block conteudo %}
 <h1 class="mb-4">Minha Carteira de Investimentos</h1>
 
-{% set resultado = total_atual - total_custo + total_proventos %}
-<div class="row mb-4">
-    {{ ui.card("Investido", "R$ " ~ "%.2f"|format(total_custo)) }}
-    {{ ui.card("Valor atual", "R$ " ~ "%.2f"|format(total_atual)) }}
-    {{ ui.card("Proventos recebidos", "R$ " ~ "%.2f"|format(total_proventos)) }}
-    {{ ui.card("Resultado (c/ proventos)", "R$ " ~ "%.2f"|format(resultado),
-               "text-success" if resultado >= 0 else "text-danger") }}
+<div id="dashboard" hx-get="/dashboard" hx-trigger="load" hx-swap="outerHTML">
+    <div class="row mb-4">
+        {% for _ in range(4) %}
+        <div class="col">
+            <div class="card shadow-sm h-100">
+                <div class="card-body placeholder-glow">
+                    <h6 class="placeholder col-7"></h6>
+                    <p class="fs-4 mb-0 placeholder col-9"></p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <p class="text-center text-muted my-5">
+        <span class="spinner-border spinner-border-sm me-2"></span>
+        Buscando cotações e montando seus gráficos...
+    </p>
 </div>
 
-{% if rendimentos %}
-<p class="text-muted">
-    Rentabilidade no período (método de cotas):
-    {% for nome, r in rendimentos.items() %}
-    <strong class="{% if r >= 0 %}text-success{% else %}text-danger{% endif %}">{{ nome }} {{ "%+.1f"|format(r) }}%</strong>{% if not loop.last %} · {% endif %}
-    {% endfor %}
-</p>
-{% endif %}
-
-<h2>Posições</h2>
-<table class="table table-striped table-hover">
-    <tr>
-        <th>Ticker</th>
-        <th>Quantidade</th>
-        <th>Preço médio</th>
-        <th>Cotação</th>
-        <th>Valor atual</th>
-        <th>Proventos</th>
-        <th>Rentabilidade</th>
-    </tr>
-    {% for p in posicoes %}
-    <tr>
-        <td><a href="/ativo/{{ p.ativo.id }}">{{ p.ativo.ticker }}</a></td>
-        <td>{{ p.quantidade }}</td>
-        <td>R$ {{ "%.2f"|format(p.preco_medio) }}</td>
-        <td>{% if p.cotacao %}R$ {{ "%.2f"|format(p.cotacao) }}{% else %}-{% endif %}</td>
-        <td>{% if p.valor_atual %}R$ {{ "%.2f"|format(p.valor_atual) }}{% else %}-{% endif %}</td>
-        <td>R$ {{ "%.2f"|format(p.proventos) }}</td>
-        <td class="{% if p.rentabilidade and p.rentabilidade >= 0 %}text-success{% elif p.rentabilidade %}text-danger{% endif %}">
-            {% if p.rentabilidade is not none %}{{ "%.2f"|format(p.rentabilidade) }}%{% else %}-{% endif %}
-        </td>
-    </tr>
-    {% endfor %}
-</table>
-
-<h2>Gráficos</h2>
-{% if grafico_pizza %}
-    {{ grafico_pizza|safe }}
-{% endif %}
-{% if grafico_linha %}
-    {{ grafico_linha|safe }}
-{% endif %}
-{% if grafico_patrimonio %}
-    {{ grafico_patrimonio|safe }}
-{% endif %}
-
 <h2>Meus ativos</h2>
-<table class="table table-striped">
+<table class="table table-striped align-middle">
     <tr>
         <th>Ticker</th>
         <th>Nome</th>

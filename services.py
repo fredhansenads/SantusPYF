@@ -249,7 +249,7 @@ def grafico_alocacao(posicoes, tema="escuro"):
         return None
     fig = px.pie(names=tickers, values=valores, title="Alocação da carteira")
     _aplicar_tema(fig, tema)
-    return fig.to_html(full_html=False, include_plotlyjs="cdn")
+    return fig.to_html(full_html=False, include_plotlyjs=False)
 
 
 def grafico_evolucao(comparacao, tema="escuro"):
@@ -336,7 +336,7 @@ def graficos_ativo(ativo, mm1=20, mm2=50, tipo_grafico="linha",
     _aplicar_tema(fig_precos, tema)
     _aplicar_tema(fig_rsi, tema)
 
-    return (fig_precos.to_html(full_html=False, include_plotlyjs="cdn"),
+    return (fig_precos.to_html(full_html=False, include_plotlyjs=False),
             fig_rsi.to_html(full_html=False, include_plotlyjs=False))
 
 

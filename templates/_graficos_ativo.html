@@ -1,0 +1,6 @@
+{% if graficos %}
+    {{ graficos[0]|safe }}
+    {{ graficos[1]|safe }}
+{% else %}
+<div class="alert alert-warning">Não foi possível carregar os gráficos deste ativo.</div>
+{% endif %}

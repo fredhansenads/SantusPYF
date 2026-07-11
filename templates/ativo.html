@@ -20,7 +20,8 @@
 <p class="text-muted">Sem posição aberta neste ativo.</p>
 {% endif %}
 
-<form method="GET" class="row g-2 align-items-end mb-3">
+<form hx-get="/ativo/{{ ativo.id }}/graficos" hx-target="#graficos-ativo"
+      hx-swap="innerHTML" class="row g-2 align-items-end mb-3">
     <div class="col-auto">
         <label class="form-label mb-1">Média 1 (dias):</label>
         <input type="number" name="mm1" value="{{ mm1 }}" min="1" max="200" class="form-control">
@@ -43,14 +44,19 @@
     </div>
     {% endif %}
     <div class="col-auto">
-        <button type="submit" class="btn btn-outline-primary">Aplicar</button>
+        <button type="submit" class="btn btn-outline-primary">
+            Aplicar <span class="htmx-indicator spinner-border spinner-border-sm ms-1"></span>
+        </button>
     </div>
 </form>
 
-{% if graficos %}
-    {{ graficos[0]|safe }}
-    {{ graficos[1]|safe }}
-{% endif %}
+<div id="graficos-ativo" hx-get="/ativo/{{ ativo.id }}/graficos"
+     hx-trigger="load" hx-swap="innerHTML">
+    <p class="text-center text-muted my-5">
+        <span class="spinner-border spinner-border-sm me-2"></span>
+        Carregando gráficos...
+    </p>
+</div>
 
 <h2>Transações</h2>
 <table class="table table-striped">

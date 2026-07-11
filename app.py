@@ -51,6 +51,13 @@ def logout():
 @login_required
 def pagina_inicial():
     ativos = Ativo.query.all()
+    return render_template("ativos.html", ativos=ativos)
+
+
+@app.route("/dashboard")
+@login_required
+def dashboard():
+    ativos = Ativo.query.all()
     posicoes = []
     for ativo in ativos:
         p = calcular_posicao(ativo)
@@ -72,7 +79,7 @@ def pagina_inicial():
         rendimentos = {coluna: comparacao[coluna].iloc[-1] - 100
                        for coluna in comparacao.columns}
 
-    return render_template("ativos.html", ativos=ativos,
+    return render_template("_dashboard.html",
                            posicoes=posicoes,
                            total_custo=total_custo,
                            total_atual=total_atual,
@@ -188,6 +195,18 @@ def excluir_transacao(id):
 def detalhe_ativo(id):
     ativo = Ativo.query.get_or_404(id)
     posicao = calcular_posicao(ativo)
+    salvos = session.get(f"graficos_ativo_{id}", {})
+    return render_template("ativo.html", ativo=ativo, posicao=posicao,
+                           mm1=salvos.get("mm1", 20),
+                           mm2=salvos.get("mm2", 50),
+                           rsi_periodo=salvos.get("rsi", 14),
+                           tipo_grafico=salvos.get("grafico", "linha"))
+
+
+@app.route("/ativo/<int:id>/graficos")
+@login_required
+def graficos_do_ativo(id):
+    ativo = Ativo.query.get_or_404(id)
 
     chave_sessao = f"graficos_ativo_{id}"
     salvos = session.get(chave_sessao, {})
@@ -202,10 +221,7 @@ def detalhe_ativo(id):
 
     tema = request.cookies.get("tema", "escuro")
     graficos = graficos_ativo(ativo, mm1, mm2, tipo_grafico, rsi_periodo, tema)
-    return render_template("ativo.html", ativo=ativo,
-                           posicao=posicao, graficos=graficos,
-                           mm1=mm1, mm2=mm2, rsi_periodo=rsi_periodo,
-                           tipo_grafico=tipo_grafico)
+    return render_template("_graficos_ativo.html", graficos=graficos)
 
 
 @app.route("/analises")
