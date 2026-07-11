@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<h1 class="mb-4">Registrar Provento</h1>
+
+<form method="POST">
+    <div class="mb-3">
+        <label class="form-label">Ativo:</label>
+        <select name="ativo_id" class="form-select">
+            {% for ativo in ativos %}
+            <option value="{{ ativo.id }}">{{ ativo.ticker }} - {{ ativo.nome }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Data do recebimento:</label>
+        <input type="date" name="data" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Tipo:</label>
+        <select name="tipo" class="form-select">
+            <option value="Dividendo">Dividendo</option>
+            <option value="JCP">JCP (Juros sobre Capital Próprio)</option>
+            <option value="Rendimento">Rendimento (FII)</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Valor total recebido (R$):</label>
+        <input type="number" name="valor" step="any" min="0" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Salvar</button>
+</form>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<h1 class="mb-1">{{ ativo.ticker }}</h1>
+<p class="text-muted mb-4">{{ ativo.nome }} — {{ ativo.tipo }}</p>
+
+{% if posicao %}
+<div class="row mb-4">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="text-muted">Quantidade</h6>
+                <p class="fs-4 mb-0">{{ posicao.quantidade }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="text-muted">Preço médio</h6>
+                <p class="fs-4 mb-0">R$ {{ "%.2f"|format(posicao.preco_medio) }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="text-muted">Valor atual</h6>
+                <p class="fs-4 mb-0">{% if posicao.valor_atual %}R$ {{ "%.2f"|format(posicao.valor_atual) }}{% else %}-{% endif %}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h6 class="text-muted">Rentabilidade</h6>
+                <p class="fs-4 mb-0 {% if posicao.rentabilidade and posicao.rentabilidade >= 0 %}text-success{% elif posicao.rentabilidade %}text-danger{% endif %}">
+                    {% if posicao.rentabilidade is not none %}{{ "%.2f"|format(posicao.rentabilidade) }}%{% else %}-{% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<p class="text-muted">Sem posição aberta neste ativo.</p>
+{% endif %}
+
+{% if graficos %}
+    {{ graficos[0]|safe }}
+    {{ graficos[1]|safe }}
+{% endif %}
+
+<h2>Transações</h2>
+<table class="table table-striped">
+    <tr>
+        <th>Data</th>
+        <th>Tipo</th>
+        <th>Quantidade</th>
+        <th>Preço unitário</th>
+    </tr>
+    {% for t in ativo.transacoes|sort(attribute="data") %}
+    <tr>
+        <td>{{ t.data.strftime("%d/%m/%Y") }}</td>
+        <td>{{ t.tipo }}</td>
+        <td>{{ t.quantidade }}</td>
+        <td>R$ {{ "%.2f"|format(t.preco_unitario) }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h2>Proventos</h2>
+{% if ativo.proventos %}
+<table class="table table-striped">
+    <tr>
+        <th>Data</th>
+        <th>Tipo</th>
+        <th>Valor</th>
+    </tr>
+    {% for p in ativo.proventos|sort(attribute="data") %}
+    <tr>
+        <td>{{ p.data.strftime("%d/%m/%Y") }}</td>
+        <td>{{ p.tipo }}</td>
+        <td>R$ {{ "%.2f"|format(p.valor) }}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p class="text-muted">Nenhum provento registrado.</p>
+{% endif %}
+
+<a class="btn btn-outline-primary mb-4" href="/editar/{{ ativo.id }}">Editar ativo</a>
+{% endblock %}

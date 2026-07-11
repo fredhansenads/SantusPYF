@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<h1 class="mb-4">Análises de Risco</h1>
+
+{% if linhas %}
+<p class="text-muted">
+    Métricas calculadas sobre o período em que cada ativo está na carteira.
+    <strong>Volatilidade</strong>: o quanto o preço "chacoalha" (anualizada).
+    <strong>Drawdown máximo</strong>: a maior queda do topo ao fundo no período.
+</p>
+
+<table class="table table-striped table-hover">
+    <tr>
+        <th>Ativo</th>
+        <th>Retorno no período</th>
+        <th>Volatilidade (anual)</th>
+        <th>Drawdown máximo</th>
+    </tr>
+    {% for m in linhas %}
+    <tr>
+        <td>{{ m.ticker }}</td>
+        <td class="{% if m.retorno >= 0 %}text-success{% else %}text-danger{% endif %}">
+            {{ "%+.1f"|format(m.retorno) }}%
+        </td>
+        <td>{{ "%.1f"|format(m.volatilidade) }}%</td>
+        <td class="text-danger">-{{ "%.1f"|format(m.drawdown) }}%</td>
+    </tr>
+    {% endfor %}
+</table>
+
+{% if tabela_correlacao %}
+<h2>Correlação entre ativos</h2>
+<p class="text-muted">
+    1,00 = andam sempre juntos; perto de 0 = independentes; negativo = andam
+    em direções opostas. Diversificar bem é combinar ativos de correlação baixa.
+</p>
+{{ tabela_correlacao|safe }}
+{% endif %}
+
+{% else %}
+<p class="text-muted">Cadastre ativos e transações para ver as análises.</p>
+{% endif %}
+{% endblock %}

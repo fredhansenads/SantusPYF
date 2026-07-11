@@ -7,19 +7,23 @@ Projeto de estudo desenvolvido durante meu curso de Python.
 
 ## 🎯 Funcionalidades
 
-- ✅ Cadastro, edição e exclusão de ativos (ações, FIIs, renda fixa, ETFs)
-- ✅ Registro de transações de compra e venda
-- ✅ Cotações via yfinance, com cache para carregamento rápido
+- ✅ Cadastro, edição e exclusão de ativos (ações, FIIs, ETFs, renda fixa e **Tesouro Direto**)
+- ✅ Registro de transações de compra e venda e de **proventos** (dividendos, JCP, rendimentos)
+- ✅ Cotações via yfinance e Tesouro Transparente (fonte oficial), com cache
 - ✅ Posição por ativo (quantidade, preço médio, custo) calculada a partir das transações
-- ✅ Rentabilidade e comparação histórica com o IBOV (base 100)
-- ✅ Gráficos interativos com Plotly (alocação da carteira e evolução vs. benchmark)
+- ✅ Rentabilidade pelo **método de cotas** (como fundos de investimento), incluindo proventos
+- ✅ Comparação histórica com **IBOV e CDI** (API do Banco Central), base 100
+- ✅ Gráficos interativos com Plotly (alocação, evolução vs. benchmarks, patrimônio)
+- ✅ Página de detalhe por ativo com **médias móveis e RSI**
+- ✅ **Análise de risco**: volatilidade, drawdown máximo e correlação entre ativos
+- ✅ **Login com senha criptografada** (Flask-Login)
 - ✅ Interface responsiva com Bootstrap e mensagens de feedback ao usuário
-- 🚧 Análise de risco e indicadores técnicos *(próximos passos)*
 
 ## 🛠️ Tecnologias
 
 - **Python 3.14** — linguagem principal
 - **Flask** — framework web
+- **Flask-Login** — autenticação
 - **SQLAlchemy + SQLite** — banco de dados
 - **yfinance** — cotações do mercado
 - **Pandas** — manipulação de dados

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<h1 class="mb-4">Proventos</h1>
+
+<table class="table table-striped table-hover">
+    <tr>
+        <th>Data</th>
+        <th>Ativo</th>
+        <th>Tipo</th>
+        <th>Valor</th>
+        <th>Ações</th>
+    </tr>
+    {% for p in proventos %}
+    <tr>
+        <td>{{ p.data.strftime("%d/%m/%Y") }}</td>
+        <td>{{ p.ativo.ticker }}</td>
+        <td>{{ p.tipo }}</td>
+        <td>R$ {{ "%.2f"|format(p.valor) }}</td>
+        <td>
+            <form method="POST" action="/proventos/excluir/{{ p.id }}"
+                  style="display:inline"
+                  onsubmit="return confirm('Excluir este provento de {{ p.ativo.ticker }}?')">
+                <button type="submit" class="btn btn-sm btn-outline-danger">Excluir</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<a class="btn btn-primary" href="/proventos/novo">+ Novo provento</a>
+{% endblock %}

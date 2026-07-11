@@ -11,11 +11,16 @@
     <nav class="navbar navbar-expand navbar-dark bg-dark mb-4">
         <div class="container">
             <a class="navbar-brand" href="/">💼 Minha Carteira</a>
+            {% if current_user.is_authenticated %}
             <div class="navbar-nav">
                 <a class="nav-link" href="/">Carteira</a>
                 <a class="nav-link" href="/transacoes">Transações</a>
+                <a class="nav-link" href="/proventos">Proventos</a>
+                <a class="nav-link" href="/analises">Análises</a>
                 <a class="nav-link" href="/novo">Novo ativo</a>
+                <a class="nav-link" href="/logout">Sair</a>
             </div>
+            {% endif %}
         </div>
     </nav>
 
