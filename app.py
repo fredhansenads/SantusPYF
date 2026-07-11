@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_login import LoginManager, login_user, logout_user, login_required
 from werkzeug.security import check_password_hash
 from models import db, Ativo, Transacao, Provento, Usuario
@@ -154,6 +154,24 @@ def nova_transacao():
     ativos = Ativo.query.all()
     return render_template("nova_transacao.html", ativos=ativos)
 
+@app.route("/transacoes/editar/<int:id>", methods=["GET", "POST"])
+@login_required
+def editar_transacao(id):
+    transacao = Transacao.query.get_or_404(id)
+    if request.method == "POST":
+        transacao.ativo_id = int(request.form["ativo_id"])
+        transacao.data = date.fromisoformat(request.form["data"])
+        transacao.tipo = request.form["tipo"]
+        transacao.quantidade = float(request.form["quantidade"])
+        transacao.preco_unitario = float(request.form["preco_unitario"])
+        db.session.commit()
+        flash("Transação atualizada!", "success")
+        return redirect(url_for("listar_transacoes"))
+    ativos = Ativo.query.all()
+    return render_template("editar_transacao.html",
+                           transacao=transacao, ativos=ativos)
+
+
 @app.route("/transacoes/excluir/<int:id>", methods=["POST"])
 @login_required
 def excluir_transacao(id):
@@ -168,9 +186,23 @@ def excluir_transacao(id):
 def detalhe_ativo(id):
     ativo = Ativo.query.get_or_404(id)
     posicao = calcular_posicao(ativo)
-    graficos = graficos_ativo(ativo)
+
+    chave_sessao = f"graficos_ativo_{id}"
+    salvos = session.get(chave_sessao, {})
+
+    mm1 = min(max(request.args.get("mm1", salvos.get("mm1", 20), type=int), 1), 200)
+    mm2 = min(max(request.args.get("mm2", salvos.get("mm2", 50), type=int), 1), 200)
+    rsi_periodo = min(max(request.args.get("rsi", salvos.get("rsi", 14), type=int), 2), 50)
+    tipo_grafico = request.args.get("grafico", salvos.get("grafico", "linha"))
+
+    session[chave_sessao] = {"mm1": mm1, "mm2": mm2,
+                             "rsi": rsi_periodo, "grafico": tipo_grafico}
+
+    graficos = graficos_ativo(ativo, mm1, mm2, tipo_grafico, rsi_periodo)
     return render_template("ativo.html", ativo=ativo,
-                           posicao=posicao, graficos=graficos)
+                           posicao=posicao, graficos=graficos,
+                           mm1=mm1, mm2=mm2, rsi_periodo=rsi_periodo,
+                           tipo_grafico=tipo_grafico)
 
 
 @app.route("/analises")

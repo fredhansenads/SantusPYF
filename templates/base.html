@@ -25,6 +25,9 @@
     </nav>
 
     <div class="container">
+        {% if request.path not in ("/", "/login") %}
+        <a href="javascript:history.back()" class="btn btn-sm btn-outline-secondary mb-3">&larr; Voltar</a>
+        {% endif %}
         {% with mensagens = get_flashed_messages(with_categories=true) %}
             {% for categoria, texto in mensagens %}
                 <div class="alert alert-{{ categoria }}">{{ texto }}</div>

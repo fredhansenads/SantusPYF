@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<h1 class="mb-4">Editar Transação</h1>
+
+<form method="POST">
+    <div class="mb-3">
+        <label class="form-label">Ativo:</label>
+        <select name="ativo_id" class="form-select">
+            {% for ativo in ativos %}
+            <option value="{{ ativo.id }}" {% if ativo.id == transacao.ativo_id %}selected{% endif %}>{{ ativo.ticker }} - {{ ativo.nome }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Data:</label>
+        <input type="date" name="data" value="{{ transacao.data.isoformat() }}" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Tipo:</label>
+        <select name="tipo" class="form-select">
+            <option value="compra" {% if transacao.tipo == "compra" %}selected{% endif %}>Compra</option>
+            <option value="venda" {% if transacao.tipo == "venda" %}selected{% endif %}>Venda</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Quantidade:</label>
+        <input type="number" name="quantidade" value="{{ transacao.quantidade }}" step="any" min="0" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Preço unitário (R$):</label>
+        <input type="number" name="preco_unitario" value="{{ transacao.preco_unitario }}" step="any" min="0" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Salvar alterações</button>
+</form>
+{% endblock %}

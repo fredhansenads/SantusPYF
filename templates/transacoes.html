@@ -22,6 +22,7 @@
         <td>R$ {{ "%.2f"|format(t.preco_unitario) }}</td>
         <td>R$ {{ "%.2f"|format(t.quantidade * t.preco_unitario) }}</td>
         <td>
+            <a class="btn btn-sm btn-outline-primary" href="/transacoes/editar/{{ t.id }}">Editar</a>
             <form method="POST" action="/transacoes/excluir/{{ t.id }}"
                   style="display:inline"
                   onsubmit="return confirm('Excluir esta transação de {{ t.ativo.ticker }}?')">

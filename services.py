@@ -1,11 +1,13 @@
 import yfinance as yf
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 import time
 from datetime import date, timedelta
 
 _cache_precos = {}
 _cache_historicos = {}
+_cache_ohlc = {}
 CACHE_SEGUNDOS = 600
 
 URL_TESOURO = ("https://www.tesourotransparente.gov.br/ckan/dataset/"
@@ -263,24 +265,56 @@ def calcular_rsi(precos, periodo=14):
     return 100 - 100 / (1 + ganho / perda)
 
 
-def graficos_ativo(ativo):
+def historico_ohlc(ticker, inicio):
+    agora = time.time()
+    chave = (ticker, inicio)
+
+    if chave in _cache_ohlc:
+        ohlc, momento = _cache_ohlc[chave]
+        if agora - momento < CACHE_SEGUNDOS:
+            return ohlc
+
+    ohlc = yf.Ticker(ticker).history(start=inicio)
+    ohlc.index = ohlc.index.date
+
+    _cache_ohlc[chave] = (ohlc, agora)
+    return ohlc
+
+
+def graficos_ativo(ativo, mm1=20, mm2=50, tipo_grafico="linha", rsi_periodo=14):
     inicio = date.today() - timedelta(days=365)
-    if ativo.tipo == "Tesouro Direto":
+    eh_tesouro = ativo.tipo == "Tesouro Direto"
+    if eh_tesouro:
         precos = serie_tesouro(ativo.ticker, inicio)
     else:
         precos = historico_precos(ativo.ticker, inicio)
     if precos is None or precos.empty:
         return None
 
-    df = pd.DataFrame({
-        "Preço": precos,
-        "Média 20 dias": precos.rolling(20).mean(),
-        "Média 50 dias": precos.rolling(50).mean(),
-    })
-    fig_precos = px.line(df, title=f"{ativo.ticker} — preço e médias móveis (1 ano)")
+    medias = {
+        f"Média {mm1} dias": precos.rolling(mm1).mean(),
+        f"Média {mm2} dias": precos.rolling(mm2).mean(),
+    }
 
-    rsi = calcular_rsi(precos)
-    fig_rsi = px.line(rsi, title="RSI — Índice de Força Relativa (14 dias)")
+    if tipo_grafico == "candle" and not eh_tesouro:
+        ohlc = historico_ohlc(ativo.ticker, inicio)
+        fig_precos = go.Figure(data=[go.Candlestick(
+            x=list(ohlc.index),
+            open=ohlc["Open"], high=ohlc["High"],
+            low=ohlc["Low"], close=ohlc["Close"],
+            name=ativo.ticker)])
+        for nome, serie in medias.items():
+            fig_precos.add_scatter(x=list(serie.index), y=serie,
+                                   mode="lines", name=nome)
+        fig_precos.update_layout(
+            title=f"{ativo.ticker} — candlestick e médias móveis (1 ano)",
+            xaxis_rangeslider_visible=False)
+    else:
+        df = pd.DataFrame({"Preço": precos, **medias})
+        fig_precos = px.line(df, title=f"{ativo.ticker} — preço e médias móveis (1 ano)")
+
+    rsi = calcular_rsi(precos, rsi_periodo)
+    fig_rsi = px.line(rsi, title=f"RSI — Índice de Força Relativa ({rsi_periodo} dias)")
     fig_rsi.add_hline(y=70, line_dash="dash", line_color="red")
     fig_rsi.add_hline(y=30, line_dash="dash", line_color="green")
     fig_rsi.update_yaxes(range=[0, 100])
