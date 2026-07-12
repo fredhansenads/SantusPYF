@@ -3,8 +3,6 @@
 Sistema web para controle de carteira de investimentos, inspirado no KINVO.
 Projeto de estudo desenvolvido durante meu curso de Python.
 
-🌐 **Ao vivo:** [fredhansen.pythonanywhere.com](https://fredhansen.pythonanywhere.com)
-
 ## 🎯 Funcionalidades
 
 - ✅ Cadastro, edição e exclusão de ativos (ações, FIIs, ETFs, renda fixa e **Tesouro Direto**)
@@ -13,11 +11,13 @@ Projeto de estudo desenvolvido durante meu curso de Python.
 - ✅ Posição por ativo (quantidade, preço médio, custo) calculada a partir das transações
 - ✅ Rentabilidade pelo **método de cotas** (como fundos de investimento), incluindo proventos
 - ✅ Comparação histórica com **IBOV e CDI** (API do Banco Central), base 100
+- ✅ Registro da **corretora** em cada transação
 - ✅ Gráficos interativos com Plotly (alocação, evolução vs. benchmarks, patrimônio)
-- ✅ Página de detalhe por ativo com **médias móveis e RSI**
+- ✅ Página de detalhe por ativo com **médias móveis, RSI e candlestick** configuráveis
 - ✅ **Análise de risco**: volatilidade, drawdown máximo e correlação entre ativos
 - ✅ **Login com senha criptografada** (Flask-Login)
 - ✅ Interface moderna e responsiva: tema claro/escuro, ícones, fonte Inter e feedback ao usuário
+- ✅ **PWA** — instalável como aplicativo no celular e no computador
 
 ## 🛠️ Tecnologias
 
@@ -28,7 +28,7 @@ Projeto de estudo desenvolvido durante meu curso de Python.
 - **yfinance** — cotações do mercado
 - **Pandas** — manipulação de dados
 - **Plotly** — gráficos interativos
-- **Bootstrap 5** — interface
+- **Bootstrap 5 + htmx** — interface moderna e responsiva
 
 ## 🚀 Como executar
 
@@ -46,13 +46,21 @@ Projeto de estudo desenvolvido durante meu curso de Python.
    ```
    pip install -r requirements.txt
    ```
-4. Rode a aplicação:
+4. Crie um usuário de acesso (o sistema é protegido por login):
+   ```
+   python criar_usuario.py
+   ```
+5. Rode a aplicação:
    ```
    python app.py
    ```
-5. Acesse `http://127.0.0.1:5000` no navegador.
+6. Acesse `http://127.0.0.1:5000` no navegador e faça login.
 
 O banco de dados SQLite é criado automaticamente na primeira execução (pasta `instance/`).
+
+> **Nota sobre a chave secreta:** em produção, defina a variável de ambiente
+> `SECRET_KEY` com um valor aleatório. Sem ela, o sistema usa uma chave padrão
+> apenas para desenvolvimento.
 
 ## 📚 Aprendizados
 
