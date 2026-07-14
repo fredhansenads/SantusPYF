@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<h1 class="mb-4">Controle</h1>
+
+<table class="table table-striped table-hover align-middle">
+    <tr>
+        <th>Ticker</th>
+        <th>Quantidade</th>
+        <th>Data com</th>
+        <th>Data de pagamento</th>
+        <th>Valor (R$)</th>
+        <th>Ações</th>
+    </tr>
+    {% for item in itens %}
+    <tr>
+        <td>{{ item.ativo.ticker }}</td>
+        <td>{{ item.quantidade }}</td>
+        <td>{{ item.data_com.strftime("%d/%m/%Y") if item.data_com else "-" }}</td>
+        <td>{{ item.data_pagamento.strftime("%d/%m/%Y") if item.data_pagamento else "-" }}</td>
+        <td>{% if item.valor is not none %}R$ {{ "%.2f"|format(item.valor) }}{% else %}-{% endif %}</td>
+        <td>
+            <a class="btn btn-sm btn-outline-primary" href="/controle/editar/{{ item.id }}"><i class="bi bi-pencil me-1"></i>Editar</a>
+            <form method="POST" action="/controle/excluir/{{ item.id }}"
+                  style="display:inline"
+                  onsubmit="return confirm('Excluir este lançamento de {{ item.ativo.ticker }}?')">
+                <button type="submit" class="btn btn-sm btn-outline-danger"><i class="bi bi-trash me-1"></i>Excluir</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+
+<a class="btn btn-primary" href="/controle/novo"><i class="bi bi-plus-circle me-1"></i>Novo lançamento</a>
+{% endblock %}

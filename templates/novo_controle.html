@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block conteudo %}
+<h1 class="mb-4">Novo Lançamento de Controle</h1>
+
+{% if posicoes %}
+<form method="POST">
+    <div class="mb-3">
+        <label class="form-label">Ativo (em posição):</label>
+        <select name="ativo_id" class="form-select" required>
+            {% for ativo, q in posicoes %}
+            <option value="{{ ativo.id }}">{{ ativo.ticker }} — {{ q }} un.</option>
+            {% endfor %}
+        </select>
+        <div class="form-text">Ticker e quantidade são capturados automaticamente da posição atual.</div>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Data com:</label>
+        <input type="date" name="data_com" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Data de pagamento:</label>
+        <input type="date" name="data_pagamento" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Valor (R$):</label>
+        <input type="number" name="valor" step="any" min="0" class="form-control">
+    </div>
+    <button type="submit" class="btn btn-primary">Salvar</button>
+</form>
+{% else %}
+<div class="alert alert-warning">
+    Nenhum ativo em posição. Cadastre ativos e transações de compra primeiro.
+</div>
+{% endif %}
+{% endblock %}

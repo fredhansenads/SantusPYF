@@ -17,6 +17,7 @@ class Ativo(db.Model):
     tipo = db.Column(db.String(30), nullable=False)
     transacoes = db.relationship("Transacao", backref="ativo", lazy=True, cascade="all, delete-orphan")
     proventos = db.relationship("Provento", backref="ativo", lazy=True, cascade="all, delete-orphan")
+    controles = db.relationship("Controle", backref="ativo", lazy=True, cascade="all, delete-orphan")
 
 
 class Transacao(db.Model):
@@ -33,5 +34,14 @@ class Provento(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     ativo_id = db.Column(db.Integer, db.ForeignKey("ativo.id"), nullable=False)
     data = db.Column(db.Date, nullable=False)
-    tipo = db.Column(db.String(20), nullable=False)
+    tipo = db.Column(db.String(50), nullable=False)
     valor = db.Column(db.Float, nullable=False)
+
+
+class Controle(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ativo_id = db.Column(db.Integer, db.ForeignKey("ativo.id"), nullable=False)
+    quantidade = db.Column(db.Float, nullable=False)
+    data_com = db.Column(db.Date)
+    data_pagamento = db.Column(db.Date)
+    valor = db.Column(db.Float)

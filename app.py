@@ -2,11 +2,11 @@ import os
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_login import LoginManager, login_user, logout_user, login_required
 from werkzeug.security import check_password_hash
-from models import db, Ativo, Transacao, Provento, Usuario
+from models import db, Ativo, Transacao, Provento, Controle, Usuario
 from datetime import date
-from services import (calcular_posicao, grafico_alocacao, grafico_evolucao,
-                      comparacao_completa, grafico_patrimonio, graficos_ativo,
-                      analise_risco)
+from services import (calcular_posicao, quantidade_em_posicao, grafico_alocacao,
+                      grafico_evolucao, comparacao_completa, grafico_patrimonio,
+                      graficos_ativo, analise_risco)
 from sqlalchemy.exc import IntegrityError
 
 
@@ -272,6 +272,73 @@ def excluir_provento(id):
     db.session.commit()
     flash("Provento excluído.", "success")
     return redirect(url_for("listar_proventos"))
+
+
+def _data_ou_none(texto):
+    return date.fromisoformat(texto) if texto else None
+
+
+def _valor_ou_none(texto):
+    return float(texto) if texto else None
+
+
+def _posicoes_disponiveis():
+    itens = []
+    for ativo in Ativo.query.order_by(Ativo.ticker).all():
+        q = quantidade_em_posicao(ativo)
+        if q is not None:
+            itens.append((ativo, q))
+    return itens
+
+
+@app.route("/controle")
+@login_required
+def listar_controle():
+    itens = Controle.query.order_by(Controle.data_com).all()
+    return render_template("controle.html", itens=itens)
+
+
+@app.route("/controle/novo", methods=["GET", "POST"])
+@login_required
+def novo_controle():
+    if request.method == "POST":
+        ativo = Ativo.query.get_or_404(int(request.form["ativo_id"]))
+        item = Controle(
+            ativo_id=ativo.id,
+            quantidade=quantidade_em_posicao(ativo) or 0,
+            data_com=_data_ou_none(request.form.get("data_com")),
+            data_pagamento=_data_ou_none(request.form.get("data_pagamento")),
+            valor=_valor_ou_none(request.form.get("valor")),
+        )
+        db.session.add(item)
+        db.session.commit()
+        flash("Lançamento de controle registrado!", "success")
+        return redirect(url_for("listar_controle"))
+    return render_template("novo_controle.html", posicoes=_posicoes_disponiveis())
+
+
+@app.route("/controle/editar/<int:id>", methods=["GET", "POST"])
+@login_required
+def editar_controle(id):
+    item = Controle.query.get_or_404(id)
+    if request.method == "POST":
+        item.data_com = _data_ou_none(request.form.get("data_com"))
+        item.data_pagamento = _data_ou_none(request.form.get("data_pagamento"))
+        item.valor = _valor_ou_none(request.form.get("valor"))
+        db.session.commit()
+        flash("Lançamento atualizado!", "success")
+        return redirect(url_for("listar_controle"))
+    return render_template("editar_controle.html", item=item)
+
+
+@app.route("/controle/excluir/<int:id>", methods=["POST"])
+@login_required
+def excluir_controle(id):
+    item = Controle.query.get_or_404(id)
+    db.session.delete(item)
+    db.session.commit()
+    flash("Lançamento excluído.", "success")
+    return redirect(url_for("listar_controle"))
 
 
 @app.route("/sw.js")

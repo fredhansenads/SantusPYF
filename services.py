@@ -89,6 +89,15 @@ def preco_tesouro(nome_titulo):
         return None
     return float(serie.iloc[-1])
 
+def quantidade_em_posicao(ativo):
+    """Quantidade atual em carteira (compras - vendas), sem consultar cotação.
+    Retorna None se o ativo não tiver posição aberta."""
+    comprada = sum(t.quantidade for t in ativo.transacoes if t.tipo == "compra")
+    vendida = sum(t.quantidade for t in ativo.transacoes if t.tipo == "venda")
+    quantidade = comprada - vendida
+    return quantidade if quantidade > 0 else None
+
+
 def calcular_posicao(ativo):
     qtd_comprada = 0
     qtd_vendida = 0
