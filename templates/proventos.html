@@ -16,7 +16,7 @@
         <td>{{ p.data.strftime("%d/%m/%Y") }}</td>
         <td>{{ p.ativo.ticker }}</td>
         <td><span class="badge text-bg-info">{{ p.tipo }}</span></td>
-        <td>R$ {{ "%.2f"|format(p.valor) }}</td>
+        <td>R$ {{ p.valor|moeda6 }}</td>
         <td>
             <form method="POST" action="/proventos/excluir/{{ p.id }}"
                   style="display:inline"

@@ -18,7 +18,7 @@
         <td>{{ item.quantidade }}</td>
         <td>{{ item.data_com.strftime("%d/%m/%Y") if item.data_com else "-" }}</td>
         <td>{{ item.data_pagamento.strftime("%d/%m/%Y") if item.data_pagamento else "-" }}</td>
-        <td>{% if item.valor is not none %}R$ {{ "%.2f"|format(item.valor) }}{% else %}-{% endif %}</td>
+        <td>{% if item.valor is not none %}R$ {{ item.valor|moeda6 }}{% else %}-{% endif %}</td>
         <td>
             <a class="btn btn-sm btn-outline-primary" href="/controle/editar/{{ item.id }}"><i class="bi bi-pencil me-1"></i>Editar</a>
             <form method="POST" action="/controle/excluir/{{ item.id }}"

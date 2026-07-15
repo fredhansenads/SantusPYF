@@ -90,7 +90,7 @@
     <tr>
         <td>{{ p.data.strftime("%d/%m/%Y") }}</td>
         <td>{{ p.tipo }}</td>
-        <td>R$ {{ "%.2f"|format(p.valor) }}</td>
+        <td>R$ {{ p.valor|moeda6 }}</td>
     </tr>
     {% endfor %}
 </table>

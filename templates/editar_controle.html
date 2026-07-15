@@ -15,7 +15,8 @@
     </div>
     <div class="mb-3">
         <label class="form-label">Valor (R$):</label>
-        <input type="number" name="valor" value="{{ item.valor if item.valor is not none else '' }}" step="any" min="0" class="form-control">
+        <input type="number" name="valor" value="{{ item.valor if item.valor is not none else '' }}" step="0.000001" min="0" class="form-control">
+        <div class="form-text">Aceita até 6 casas decimais.</div>
     </div>
     <button type="submit" class="btn btn-primary">Salvar alterações</button>
 </form>

@@ -1,0 +1,23 @@
+<div id="distribuicao">
+    <div class="row g-2 align-items-end mb-2">
+        <div class="col-auto">
+            <label class="form-label mb-1">Ver distribuição:</label>
+            <select name="classe" class="form-select"
+                    hx-get="/distribuicao" hx-target="#distribuicao" hx-swap="outerHTML">
+                <option value="">Por classe (todas)</option>
+                {% for c in classes %}
+                <option value="{{ c }}" {% if c == classe %}selected{% endif %}>Só {{ c }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-auto">
+            <span class="htmx-indicator spinner-border spinner-border-sm mb-2"></span>
+        </div>
+    </div>
+
+    {% if grafico %}
+        {{ grafico|safe }}
+    {% else %}
+        <div class="alert alert-warning">Sem dados para exibir nesta distribuição.</div>
+    {% endif %}
+</div>

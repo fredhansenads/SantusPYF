@@ -29,7 +29,9 @@
     </div>
     <div class="mb-3">
         <label class="form-label">Valor total recebido (R$):</label>
-        <input type="number" name="valor" step="any" min="0" class="form-control" required>
+        <input type="number" name="valor" step="0.000001" min="0" class="form-control"
+               placeholder="Ex.: 0.123456" required>
+        <div class="form-text">Aceita até 6 casas decimais.</div>
     </div>
     <button type="submit" class="btn btn-primary">Salvar</button>
 </form>

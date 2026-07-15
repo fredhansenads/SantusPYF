@@ -6,7 +6,8 @@ from models import db, Ativo, Transacao, Provento, Controle, Usuario
 from datetime import date
 from services import (calcular_posicao, quantidade_em_posicao, grafico_alocacao,
                       grafico_evolucao, comparacao_completa, grafico_patrimonio,
-                      graficos_ativo, analise_risco)
+                      graficos_ativo, analise_risco, grafico_distribuicao,
+                      classes_da_carteira)
 from sqlalchemy.exc import IntegrityError
 
 
@@ -274,6 +275,15 @@ def excluir_provento(id):
     return redirect(url_for("listar_proventos"))
 
 
+@app.template_filter("moeda6")
+def _moeda6(valor):
+    """Formata com 2 a 6 casas decimais, sem zeros desnecessários.
+    Ex.: 100.0 -> '100.00' | 0.123456 -> '0.123456' | 0.1 -> '0.10'"""
+    texto = f"{valor:.6f}".rstrip("0")
+    inteiro, _, decimais = texto.partition(".")
+    return f"{inteiro}.{decimais.ljust(2, '0')}"
+
+
 def _data_ou_none(texto):
     return date.fromisoformat(texto) if texto else None
 
@@ -289,6 +299,23 @@ def _posicoes_disponiveis():
         if q is not None:
             itens.append((ativo, q))
     return itens
+
+
+@app.route("/distribuicao")
+@login_required
+def distribuicao():
+    posicoes = []
+    for ativo in Ativo.query.all():
+        p = calcular_posicao(ativo)
+        if p is not None:
+            posicoes.append(p)
+
+    classe = request.args.get("classe") or None
+    tema = request.cookies.get("tema", "escuro")
+    return render_template("_distribuicao.html",
+                           grafico=grafico_distribuicao(posicoes, classe, tema),
+                           classes=classes_da_carteira(posicoes),
+                           classe=classe)
 
 
 @app.route("/controle")

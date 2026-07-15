@@ -89,6 +89,46 @@ def preco_tesouro(nome_titulo):
         return None
     return float(serie.iloc[-1])
 
+def classe_do_ativo(ativo):
+    """Classe do ativo para a distribuição da carteira.
+    Ações são separadas em BRL/USA pelo sufixo .SA do ticker."""
+    if ativo.tipo == "Tesouro Direto":
+        return "Tesouro"
+    if ativo.tipo in ("ETF", "Fundos"):
+        return "Fundos"
+    if ativo.tipo == "Acao":
+        return "Ações BRL" if ativo.ticker.upper().endswith(".SA") else "Ações USA"
+    return ativo.tipo
+
+
+def classes_da_carteira(posicoes):
+    return sorted({classe_do_ativo(p["ativo"]) for p in posicoes if p["valor_atual"]})
+
+
+def grafico_distribuicao(posicoes, classe=None, tema="escuro"):
+    itens = [p for p in posicoes if p["valor_atual"]]
+
+    if classe:
+        itens = [p for p in itens if classe_do_ativo(p["ativo"]) == classe]
+        nomes = [p["ativo"].ticker for p in itens]
+        valores = [p["valor_atual"] for p in itens]
+        titulo = f"Distribuição em {classe}"
+    else:
+        totais = {}
+        for p in itens:
+            c = classe_do_ativo(p["ativo"])
+            totais[c] = totais.get(c, 0) + p["valor_atual"]
+        nomes = list(totais)
+        valores = list(totais.values())
+        titulo = "Distribuição por classe"
+
+    if not valores:
+        return None
+    fig = px.pie(names=nomes, values=valores, title=titulo, hole=0.4)
+    _aplicar_tema(fig, tema)
+    return fig.to_html(full_html=False, include_plotlyjs=False)
+
+
 def quantidade_em_posicao(ativo):
     """Quantidade atual em carteira (compras - vendas), sem consultar cotação.
     Retorna None se o ativo não tiver posição aberta."""
